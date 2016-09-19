@@ -6,34 +6,106 @@ A collection of commonly used utility functions/helper functions for re-frame.
 
 ## Usage
 
-TODO: add more details here... In meantime, if interested, review reframe-utils.core
+If you've been using the magical [reagent](https://github.com/reagent-project/reagent)  and [re-frame](https://github.com/Day8/re-frame) libraries, and are anything like me, you will have implemented a bunch of helper functions that manage common subscription and event/handler registration events that you create. After copy and pasting these like a plebe from project to project it seemed like about time to put together a library that has commonly used ones. The purpose of this library is to add syntactic sugar to help you reduce the lines of code you need to write when using re-frame.
+
+If you have any additional helper functions you wish to submit or suggest, please make a pull request or add an issue!
+
+To begin using the library ensure you have the latest reframe-utils included in your leiningen or boot dependencies and add the following to any namespaces you wish to use the utilities with.
+
+Caveat: we assume that your re-frame db is going to be managed as map. I mean, I doubt anyone has the audacity to try something crazy and not do that, but who knows!
 
 `(require [reframe-utils.core :as rf-utils])`
 
 ###Subscription utilities
 
-- `reg-basic-sub`
+####`reg-basic-sub`####
+Used to register a basic get query from the database
+
 ```clojure
 (reg-basic-sub :active-page)
-;;"Equivalent to"
+;; Equivalent to
 (reg-basic-sub :active-page :active-page)
-;;"Equivalent to"
+;; Equivalent to
 (reg-sub
 	:active-page
-	(fn [db _]
+	(fn [db [_ k]]
 		(k db)))
 ```
 
 ###Event/handler utilities
 
-- `reg-set-event` - equivalent to `(assoc db kw v)`
-- `reg-add-event` - equivalent to `(update-in db ks conj v)`
+#### `reg-set-event` ####
+Used to register a basic associative set to a keyworded value in the  database
+
+```clojure
+(reg-set-event :active-page)
+;; Equivalent to
+(reg-set-event :active-page :active-page)
+;; Equivalent to
+(reg-event-db
+	:set-active-page
+	(fn [db [_ page]]
+		(assoc db :active-page page)))
+```
+
+Note for the following event/handler utilities you can do crazy stuff like this which lets you update/change values of nested keywords
+```clojure
+(reg-set-event :set-deep-deep-value [:deep :super-deep :super-duper-deep])
+;; Equivalent to
+(reg-event-db
+	:set-deep-deep-value
+	(fn [db [_ page]]
+		(assoc-in db [:deep :super-deep :super-duper-deep] page)))
+```
+
+Eligible for crazy nested business
+- `reg-set-event`
+- `reg-add-event`
 - `reg-update-event`
 - `reg-remove-event`
 
+#### `reg-add-event` ####
+Used to register a basic conj update to a keyworded value in the database
+
+```clojure
+(reg-add-event :cases/add-case :cases/case)
+;; Equivalent to
+(reg-event-db
+	:cases/add-case
+	(fn [db [_ case]]
+		(update db :cases/case conj case)))
+```
+
+#### `reg-update-event` ####
+Used to register a basic replace update to a keyworded value in the database. Requires a given old and new value.
+
+```clojure
+(reg-update-event :cases/update-case :cases/case)
+;; Equivalent to
+(reg-event-db
+	:cases/update-case
+	(fn [db [_ old-case new-case]]
+		(update db :cases/case #(replace {old new} %))))
+```
+
+#### `reg-remove-event` ####
+Used to register a basic remove update to a keyworded value in the database. Removes the exact value that is passed through.
+
+```clojure
+(reg-remove-event :cases/delete-case :cases/case)
+;; Equivalent to
+(reg-event-db
+	:cases/delete-case
+	(fn [db [_ case]]
+		(update db :cases/case 
+			(fn [cases] 
+				(remove #(= % case) cases)))))
+```
+
 ###General utilities
 
-- `multi-generation` - used to generate multiple events or subscriptions at one go
+#### `multi-generation` ####
+Used to generate multiple events or subscriptions at one go
 ```clojure
 (multi-generation reg-basic-sub
 			      :active-page
