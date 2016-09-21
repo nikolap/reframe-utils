@@ -115,6 +115,11 @@ Used to generate multiple events or subscriptions at one go
 ;; will generate two subscriptions, active-page and active-cow
 ```
 
+###PROTOTYPE: AJAX Requests
+
+### `reg-ajax-get-event` ###
+Currently in testing. View core ns for more details on how to use
+
 ## License
 
 Copyright © 2016 Nikola Peric
