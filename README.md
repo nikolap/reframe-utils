@@ -12,6 +12,8 @@ If you have any additional helper functions you wish to submit or suggest, pleas
 
 To begin using the library ensure you have the latest reframe-utils included in your leiningen or boot dependencies and add the following to any namespaces you wish to use the utilities with.
 
+It's worth noting that all of the utilities in this library can handle namespaced keywords, e.g. :library/books, intelligently.
+
 Caveat: we assume that your re-frame db is going to be managed as map. I mean, I doubt anyone has the audacity to try something crazy and not do that, but who knows!
 
 `(require [reframe-utils.core :as rf-utils])`
@@ -22,14 +24,14 @@ Caveat: we assume that your re-frame db is going to be managed as map. I mean, I
 Used to register a basic get query from the database
 
 ```clojure
-(reg-basic-sub :active-page)
+(reg-basic-sub :common/active-page)
 ;; Equivalent to
-(reg-basic-sub :active-page :active-page)
+(reg-basic-sub :common/get-active-page :common/active-page)
 ;; Equivalent to
 (reg-sub
-	:active-page
-	(fn [db [_ k]]
-		(k db)))
+	:common/get-active-page
+	(fn [db _]
+		(:common/active-page db)))
 ```
 
 ###Event/handler utilities
@@ -40,7 +42,7 @@ Used to register a basic associative set to a keyworded value in the  database
 ```clojure
 (reg-set-event :active-page)
 ;; Equivalent to
-(reg-set-event :active-page :active-page)
+(reg-set-event :set-active-page :active-page)
 ;; Equivalent to
 (reg-event-db
 	:set-active-page
