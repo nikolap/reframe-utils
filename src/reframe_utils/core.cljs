@@ -1,8 +1,8 @@
 (ns reframe-utils.core
   (:require
-    [re-frame.core :refer [reg-sub reg-event-db reg-event-fx dispatch]]
-    [day8.re-frame.http-fx]
-    [ajax.core :as ajax]))
+    [re-frame.core :refer [reg-sub reg-event-db reg-event-fx reg-fx dispatch]]
+    [ajax.core :refer [GET HEAD POST PUT DELETE OPTIONS TRACE PATCH]]
+    [goog.string :as gstring]))
 
 (defn- collify
   "Given an item, returns the item if it is a coll,
@@ -134,25 +134,44 @@
       (fn [db [_ item]]
         (update-in db kw remove-when item)))))
 
+(reg-event-db
+  :reframe-utils/basic-get-success
+  (fn [db [_ k resp]]
+    (assoc-in db (collify k) resp)))
+
+(reg-fx
+  :http
+  (fn [{:keys [method uri on-success]}]
+    (let [req-fn (case method
+                   :get GET
+                   :head HEAD
+                   :post POST
+                   :put PUT
+                   :delete DELETE
+                   :options OPTIONS
+                   :trace TRACE
+                   :patch PATCH
+                   (throw (js/Error. (str "Unrecognized ajax request method: " method))))]
+      (req-fn uri
+              {:handler #(dispatch (conj on-success %))}))))
+
 (defn reg-ajax-get-event
   "WARNING: PROTOTYPE, MAY CHANGE
 
    Registers a reg-set-event event and an effectful get handler
    that performs an AJAX get request and, on success, dispatches
    the set event. Assumes set event has already been registered
-   and calls it. If no get- and set- event keywords passed, appends
-   get- and set- to the keyword."
-  ([uri get-event-kw set-event-kw kw]
+   and calls it. If no get- keyword passed, appends get- to the keyword."
+  ([uri get-event-kw kw]
    (reg-event-fx
      get-event-kw
-     (fn [{:keys [db]} _]
-       {:db         db
-        :http-xhrio {:method          :get
-                     :uri             uri
-                     :response-format :detect
-                     :on-success      [set-event-kw]}})))
+     (fn [{:keys [db]} & [params]]
+       {:db   db
+        :http {:method          :get
+               :uri             (apply gstring/subs uri (rest params))
+               :on-success      [:reframe-utils/basic-get-success kw]}})))
   ([uri kw]
-   (reg-ajax-get-event uri (kw-prefix kw "get-") (kw-prefix kw "set-") kw)))
+   (reg-ajax-get-event uri (kw-prefix kw "get-") kw)))
 
 ;; GENERAL UTILITIES
 

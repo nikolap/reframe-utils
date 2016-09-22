@@ -5,4 +5,4 @@
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [org.clojure/clojurescript "1.9.229"]
                  [re-frame "0.8.0"]
-                 [day8.re-frame/http-fx "0.0.4"]])
+                 [cljs-ajax "0.5.8"]])
