@@ -139,9 +139,10 @@
 
    Registers a reg-set-event event and an effectful get handler
    that performs an AJAX get request and, on success, dispatches
-   the set event."
+   the set event. Assumes set event has already been registered
+   and calls it. If no get- and set- event keywords passed, appends
+   get- and set- to the keyword."
   ([uri get-event-kw set-event-kw kw]
-   (reg-set-event set-event-kw kw)
    (reg-event-fx
      get-event-kw
      (fn [{:keys [db]} _]
