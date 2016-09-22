@@ -1,7 +1,8 @@
 (ns reframe-utils.core
   (:require
     [re-frame.core :refer [reg-sub reg-event-db reg-event-fx dispatch]]
-    [day8.re-frame.http-fx]))
+    [day8.re-frame.http-fx]
+    [ajax.core :as ajax]))
 
 (defn- collify
   "Given an item, returns the item if it is a coll,
@@ -145,9 +146,10 @@
      get-event-kw
      (fn [{:keys [db]} _]
        {:db         db
-        :http-xhrio {:method     :get
-                     :uri        uri
-                     :on-success [set-event-kw]}})))
+        :http-xhrio {:method          :get
+                     :uri             uri
+                     :response-format :detect
+                     :on-success      [set-event-kw]}})))
   ([uri kw]
    (reg-ajax-get-event uri (kw-prefix kw "get-") (kw-prefix kw "set-") kw)))
 
