@@ -134,13 +134,15 @@
       (fn [db [_ item]]
         (update-in db kw remove-when item)))))
 
+;; AJAX UTILITIES
+
 (reg-event-db
   :reframe-utils/basic-get-success
   (fn [db [_ k resp]]
     (assoc-in db (collify k) resp)))
 
 (reg-fx
-  :http
+  :reframe-utils/http
   (fn [{:keys [method uri on-success]}]
     (let [req-fn (case method
                    :get GET
@@ -156,20 +158,19 @@
               {:handler #(dispatch (conj on-success %))}))))
 
 (defn reg-ajax-get-event
-  "WARNING: PROTOTYPE, MAY CHANGE
+  "Registers an ajax get event that assoc-in the result to the db.
+   If no get- keyword passed, appends get- to the keyword.
 
-   Registers a reg-set-event event and an effectful get handler
-   that performs an AJAX get request and, on success, dispatches
-   the set event. Assumes set event has already been registered
-   and calls it. If no get- keyword passed, appends get- to the keyword."
+   (reg-ajax-get-event \"/api/request-call\" :data)
+   (reg-ajax-get-event \"/api/request-call\" :get-data :data)"
   ([uri get-event-kw kw]
    (reg-event-fx
      get-event-kw
      (fn [{:keys [db]} & [params]]
-       {:db   db
-        :http {:method          :get
-               :uri             (apply gstring/subs uri (rest params))
-               :on-success      [:reframe-utils/basic-get-success kw]}})))
+       {:db                 db
+        :reframe-utils/http {:method     :get
+                             :uri        (apply gstring/subs uri (rest params))
+                             :on-success [:reframe-utils/basic-get-success kw]}})))
   ([uri kw]
    (reg-ajax-get-event uri (kw-prefix kw "get-") kw)))
 

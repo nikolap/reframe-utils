@@ -115,10 +115,14 @@ Used to generate multiple events or subscriptions at one go
 ;; will generate two subscriptions, active-page and active-cow
 ```
 
-###PROTOTYPE: AJAX Requests
+###AJAX utilities
 
 ### `reg-ajax-get-event` ###
-Currently in testing. View core ns for more details on how to use
+```clojure
+(reg-ajax-get-event "/api/request-call" :data)
+;; Equivalent to
+(reg-ajax-get-event "/api/request-call" :get-data :data)
+```
 
 ## License
 
