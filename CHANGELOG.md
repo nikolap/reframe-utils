@@ -1,4 +1,13 @@
 # Change Log
+## 0.1.2 - 2016-09-xx
+### Added
+- reg-update-by-id-event
+- reg-add-or-update-by-id-event
+- reg-ajax-post-event
+- reg-ajax-put-event
+### Changed
+- Allow for reframe-utils/http effect to take a variable number of parameters for any custom parameters passed to the ajax.core requests
+
 ## 0.1.1 - 2016-09-21
 ### Added
 - Prototype reg-ajax-get-event

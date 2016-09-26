@@ -104,6 +104,12 @@ Used to register a basic remove update to a keyworded value in the database. Rem
 				(remove #(= % case) cases)))))
 ```
 
+#### `reg-update-by-id-event` ####
+EXPERIMENTAL. View source for usage details.
+
+#### `reg-add-or-update-by-id-event` ####
+EXPERIMENTAL. View source for usage details.
+
 ###General utilities
 
 #### `multi-generation` ####
@@ -117,7 +123,7 @@ Used to generate multiple events or subscriptions at one go
 
 ###AJAX utilities
 
-### `reg-ajax-get-event` ###
+#### `reg-ajax-get-event` ####
 ```clojure
 (reg-ajax-get-event "/api/request-call" :data)
 ;; Equivalent to
@@ -131,6 +137,12 @@ Used to generate multiple events or subscriptions at one go
 ;; And then you would dispatch it like so
 (dispatch [:get-item 1]) ;; => call GET on "/api/items/1" and assoc-in the response to :item
 ```
+
+#### `reg-ajax-post-event` ####
+EXPERIMENTAL. View source for usage details.
+
+#### `reg-ajax-put-event` ####
+EXPERIMENTAL. View source for usage details.
 
 ## License
 

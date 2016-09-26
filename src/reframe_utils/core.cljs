@@ -4,6 +4,8 @@
     [ajax.core :refer [GET HEAD POST PUT DELETE OPTIONS TRACE PATCH]]
     [goog.string :as gstring]))
 
+(def ^:private filter-first (comp first filter))
+
 (defn- collify
   "Given an item, returns the item if it is a coll,
    otherwise returns it wrapped in a vector"
@@ -27,6 +29,23 @@
   "Removes an item from a collection"
   [coll item]
   (remove #(= % item) coll))
+
+(defn- add-or-update-by-id-event
+  [kw id-fn add-alt? db [_ item]]
+  (if-let [id (id-fn item)]
+    (update-in db kw
+               (fn [items]
+                 (if-let [old-item (filter-first #(= (id-fn %) id) items)]
+                   (replace {old-item item} items)
+                   (if add-alt?
+                     (conj items item)
+                     (do
+                       (throw (js/Error. "No existing item found to replace: " (pr-str item)))
+                       items)))))
+
+    (do
+      (throw (js/Error. "No id found in: " (pr-str item)))
+      db)))
 
 ;; SUBSCRIPTION UTILITIES
 
@@ -111,6 +130,49 @@
       (fn [db [_ old new]]
         (update-in db kw #(replace {old new} %))))))
 
+(defn reg-update-by-id-event
+  "Registers an update event to the db that performs a replace with
+   assumptions that each item in the collection operated on has an
+   id and that it will find/update the one item whose unique id matches.
+
+   (reg-update-by-id-event :update-kw :kw)
+   (reg-update-by-id-event :id :update-kw :kw)
+   => Both of the above examples assume the :kw collection has items
+      that all contain the :id identifier
+
+   You would call the event with the new item passed through, e.g.
+
+   (dispatch [:update-kw new-item])"
+  ([id-fn event-kw kw]
+   (let [kw (collify kw)]
+     (reg-event-db
+       event-kw
+       (partial add-or-update-by-id-event kw id-fn false))))
+  ([event-kw kw]
+   (reg-update-by-id-event :id event-kw kw)))
+
+(defn reg-add-or-update-by-id-event
+  "Registers an update event to the db that performs a conj or replace
+   depending on whether an item can be found in the collection. Makes
+   assumptions on being able to the find the id of each item in the
+   collection.
+
+   (reg-add-or-update-by-id-event :add-or-update-kw :kw)
+   (reg-add-or-update-by-id-event :id :add-or-update-kw :kw)
+   => Both of the above examples assume the :kw collection has items
+      that all contain the :id identifier
+
+   You would call the event with the item passed through, e.g.
+
+   (dispatch [:add-or-update-kw item])"
+  ([id-fn event-kw kw]
+   (let [kw (collify kw)]
+     (reg-event-db
+       event-kw
+       (partial add-or-update-by-id-event kw id-fn true))))
+  ([event-kw kw]
+   (reg-add-or-update-by-id-event :id event-kw kw)))
+
 (defn reg-remove-event
   "Registers an update event to the db that performs a remove-when.
 
@@ -140,6 +202,16 @@
   :reframe-utils/basic-get-success
   (fn [db [_ k resp]]
     (assoc-in db (collify k) resp)))
+
+(reg-event-db
+  :reframe-utils/basic-add-success
+  (fn [db [_ k resp]]
+    (update-in db k conj resp)))
+
+(reg-event-db
+  :reframe-utils/basic-update-success
+  (fn [db [_ k id-fn resp]]
+    (add-or-update-by-id-event k id-fn false db [nil resp])))
 
 (reg-fx
   :reframe-utils/http
@@ -174,6 +246,33 @@
                              :on-success [:reframe-utils/basic-get-success kw]}})))
   ([uri kw]
    (reg-ajax-get-event uri (kw-prefix kw "get-") kw)))
+
+(defn reg-ajax-post-event
+  "Registers an ajax post event that applies an update-in and conj
+   of the result to the db"
+  [uri post-event-kw kw]
+  (reg-event-fx
+    post-event-kw
+    (fn [{:keys [db]} [_ params & [uri-strs]]]
+      {:db                 db
+       :reframe-utils/http {:method     :post
+                            :uri        (apply gstring/subs uri uri-strs)
+                            :params     params
+                            :on-success [:reframe-utils/basic-add-success kw]}})))
+
+(defn reg-ajax-put-event
+  "Registers an ajax put event that applies an update-in and update
+   of the result to the db. Assumes there is a unique identifier for
+   items manipulated here"
+  [uri put-event-kw kw id-fn]
+  (reg-event-fx
+    put-event-kw
+    (fn [{:keys [db]} [_ params & [uri-strs]]]
+      {:db                 db
+       :reframe-utils/http {:method     :put
+                            :uri        (apply gstring/subs uri uri-strs)
+                            :params     params
+                            :on-success [:reframe-utils/basic-update-success kw id-fn]}})))
 
 ;; GENERAL UTILITIES
 
