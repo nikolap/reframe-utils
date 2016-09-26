@@ -143,7 +143,7 @@
 
 (reg-fx
   :reframe-utils/http
-  (fn [{:keys [method uri on-success]}]
+  (fn [{:keys [method uri on-success] :as params}]
     (let [req-fn (case method
                    :get GET
                    :head HEAD
@@ -155,7 +155,8 @@
                    :patch PATCH
                    (throw (js/Error. (str "Unrecognized ajax request method: " method))))]
       (req-fn uri
-              {:handler #(dispatch (conj on-success %))}))))
+              (merge {:handler #(dispatch (conj on-success %))}
+                     (dissoc params :method :uri :on-success))))))
 
 (defn reg-ajax-get-event
   "Registers an ajax get event that assoc-in the result to the db.

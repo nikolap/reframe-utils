@@ -122,6 +122,14 @@ Used to generate multiple events or subscriptions at one go
 (reg-ajax-get-event "/api/request-call" :data)
 ;; Equivalent to
 (reg-ajax-get-event "/api/request-call" :get-data :data)
+
+;; You would then dispatch the event as follows
+(dispatch [:get-data])
+
+;; If there are variable uri params to pass through you can register an event as follows
+(reg-ajax-get-event "/api/items/%s" :item)
+;; And then you would dispatch it like so
+(dispatch [:get-item 1]) ;; => call GET on "/api/items/1" and assoc-in the response to :item
 ```
 
 ## License

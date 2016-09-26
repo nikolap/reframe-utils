@@ -1,4 +1,4 @@
-(defproject reframe-utils "0.1.1"
+(defproject reframe-utils "0.1.2-SNAPSHOT"
   :description "Utility/helper functions for use with re-frame"
   :license {:name "The MIT License (MIT)"
             :url "https://opensource.org/licenses/MIT"}
