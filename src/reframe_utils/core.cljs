@@ -30,6 +30,10 @@
   [coll item]
   (remove #(= % item) coll))
 
+(defn- error-and-return [msg return]
+  (throw (js/Error. msg))
+  return)
+
 (defn- add-or-update-by-id-event
   [kw id-fn add-alt? db [_ item]]
   (if-let [id (id-fn item)]
@@ -39,13 +43,9 @@
                    (replace {old-item item} items)
                    (if add-alt?
                      (conj items item)
-                     (do
-                       (throw (js/Error. "No existing item found to replace: " (pr-str item)))
-                       items)))))
+                     (error-and-return (str "No existing item found to replace: " (pr-str item)) items)))))
 
-    (do
-      (throw (js/Error. "No id found in: " (pr-str item)))
-      db)))
+    (error-and-return (str "No id found in: " (pr-str item)) db)))
 
 ;; SUBSCRIPTION UTILITIES
 

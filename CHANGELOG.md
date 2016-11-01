@@ -1,16 +1,19 @@
 # Change Log
-## 0.1.2 - 2016-09-xx
+## 0.1.2 - 2016-11-01
 ### Added
 - reg-update-by-id-event
 - reg-add-or-update-by-id-event
 - reg-ajax-post-event
 - reg-ajax-put-event
+
 ### Changed
 - Allow for reframe-utils/http effect to take a variable number of parameters for any custom parameters passed to the ajax.core requests
+- Bump clojurescript to 1.9.293
 
 ## 0.1.1 - 2016-09-21
 ### Added
 - Prototype reg-ajax-get-event
+
 ### Changed
 - Bump clojurescript to 1.9.229
 - Add docstrings

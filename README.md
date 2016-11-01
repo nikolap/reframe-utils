@@ -6,15 +6,13 @@ A collection of commonly used utility functions/helper functions for re-frame.
 
 ## Usage
 
-If you've been using the magical [reagent](https://github.com/reagent-project/reagent)  and [re-frame](https://github.com/Day8/re-frame) libraries, and are anything like me, you will have implemented a bunch of helper functions that manage common subscription and event/handler registration events that you create. After copy and pasting these like a plebe from project to project it seemed like about time to put together a library that has commonly used ones. The purpose of this library is to add syntactic sugar to help you reduce the lines of code you need to write when using re-frame.
+If you've been using the magical [reagent](https://github.com/reagent-project/reagent)  and [re-frame](https://github.com/Day8/re-frame) libraries, and are anything like me, you will have implemented a bunch of helper functions that manage common subscription and event/handler registration events that you create. After copy and pasting these like a pleb from project to project it seemed like about time to put together a library that has commonly used ones. The purpose of this library is to add syntactic sugar to help you reduce the lines of code you need to write when using re-frame.
 
 If you have any additional helper functions you wish to submit or suggest, please make a pull request or add an issue!
 
 To begin using the library ensure you have the latest reframe-utils included in your leiningen or boot dependencies and add the following to any namespaces you wish to use the utilities with.
 
 It's worth noting that all of the utilities in this library can handle namespaced keywords, e.g. :library/books, intelligently.
-
-Caveat: we assume that your re-frame db is going to be managed as map. I mean, I doubt anyone has the audacity to try something crazy and not do that, but who knows!
 
 `(require [reframe-utils.core :as rf-utils])`
 
@@ -50,7 +48,7 @@ Used to register a basic associative set to a keyworded value in the  database
 		(assoc db :active-page page)))
 ```
 
-Note for the following event/handler utilities you can do crazy stuff like this which lets you update/change values of nested keywords
+Unless specified otherwise, event/handler utilities you can do crazy stuff like this which lets you update/change values of nested keywords
 ```clojure
 (reg-set-event :set-deep-deep-value [:deep :super-deep :super-duper-deep])
 ;; Equivalent to
@@ -59,12 +57,6 @@ Note for the following event/handler utilities you can do crazy stuff like this 
 	(fn [db [_ page]]
 		(assoc-in db [:deep :super-deep :super-duper-deep] page)))
 ```
-
-Eligible for crazy nested business
-- `reg-set-event`
-- `reg-add-event`
-- `reg-update-event`
-- `reg-remove-event`
 
 #### `reg-add-event` ####
 Used to register a basic conj update to a keyworded value in the database
@@ -105,10 +97,10 @@ Used to register a basic remove update to a keyworded value in the database. Rem
 ```
 
 #### `reg-update-by-id-event` ####
-EXPERIMENTAL. View source for usage details.
+View source for usage details. More docs to come eventually...
 
 #### `reg-add-or-update-by-id-event` ####
-EXPERIMENTAL. View source for usage details.
+View source for usage details. More docs to come eventually...
 
 ###General utilities
 
@@ -139,10 +131,10 @@ Used to generate multiple events or subscriptions at one go
 ```
 
 #### `reg-ajax-post-event` ####
-EXPERIMENTAL. View source for usage details.
+View source for usage details. More docs to come eventually...
 
 #### `reg-ajax-put-event` ####
-EXPERIMENTAL. View source for usage details.
+View source for usage details. More docs to come eventually...
 
 ## License
 
