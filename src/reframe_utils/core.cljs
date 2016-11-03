@@ -31,7 +31,7 @@
   (remove #(= % item) coll))
 
 (defn- error-and-return [msg return]
-  (throw (js/Error. msg))
+  (.error js/console msg)
   return)
 
 (defn- add-or-update-by-id-event

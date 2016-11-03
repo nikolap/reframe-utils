@@ -1,4 +1,8 @@
 # Change Log
+## 0.1.3 - 2016-11-03
+### Fixed
+- Data not returning following error being thrown
+
 ## 0.1.2 - 2016-11-01
 ### Added
 - reg-update-by-id-event
