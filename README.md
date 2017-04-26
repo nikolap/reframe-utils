@@ -16,9 +16,9 @@ It's worth noting that all of the utilities in this library can handle namespace
 
 `(require [reframe-utils.core :as rf-utils])`
 
-###Subscription utilities
+### Subscription utilities
 
-####`reg-basic-sub`####
+#### `reg-basic-sub` ####
 Used to register a basic get query from the database
 
 ```clojure
@@ -32,7 +32,7 @@ Used to register a basic get query from the database
 		(:common/active-page db)))
 ```
 
-###Event/handler utilities
+### Event/handler utilities
 
 #### `reg-set-event` ####
 Used to register a basic associative set to a keyworded value in the  database
@@ -102,7 +102,7 @@ View source for usage details. More docs to come eventually...
 #### `reg-add-or-update-by-id-event` ####
 View source for usage details. More docs to come eventually...
 
-###General utilities
+### General utilities
 
 #### `multi-generation` ####
 Used to generate multiple events or subscriptions at one go
@@ -113,7 +113,7 @@ Used to generate multiple events or subscriptions at one go
 ;; will generate two subscriptions, active-page and active-cow
 ```
 
-###AJAX utilities
+### AJAX utilities
 
 #### `reg-ajax-get-event` ####
 ```clojure
