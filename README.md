@@ -24,12 +24,31 @@ Used to register a basic get query from the database
 ```clojure
 (reg-basic-sub :common/active-page)
 ;; Equivalent to
-(reg-basic-sub :common/get-active-page :common/active-page)
+(reg-basic-sub :common/active-page :common/active-page)
 ;; Equivalent to
 (reg-sub
-	:common/get-active-page
+	:common/active-page
 	(fn [db _]
 		(:common/active-page db)))
+```
+
+#### `reg-sub-by-id` ####
+```clojure
+(reg-sub-by-id :common/pages)
+;; Equivalent to
+(reg-sub-by-id :common/pages :common/pages)
+;; Equivalent to
+(reg-sub-by-id :common/pages :common/pages :id)
+;; Equivalent to
+(reg-sub
+     :common/pages
+     (fn [db [_ id]]
+       (->> :common/pages
+            (get db)
+            (filter
+              (fn [item]
+                (= (get item :id) id)))
+            first)))
 ```
 
 ### Event/handler utilities

@@ -63,9 +63,25 @@
    (reg-sub
      name
      (fn [db _]
-       (k db))))
+       (get db k))))
   ([k]
    (reg-basic-sub k k)))
+
+(defn reg-sub-by-id
+  ([name k id-key]
+   (reg-sub
+     name
+     (fn [db [_ id]]
+       (->> k
+            (get db)
+            (filter
+              (fn [item]
+                (= (get item id-key) id)))
+            first))))
+  ([name k]
+   (reg-sub-by-id name k :id))
+  ([k]
+   (reg-sub-by-id k k :id)))
 
 ;; EVENT/HANDLER UTILITIES
 
