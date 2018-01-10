@@ -63,7 +63,7 @@
    (reg-sub
      name
      (fn [db _]
-       (get db k))))
+       (get-in db (collify k)))))
   ([k]
    (reg-basic-sub k k)))
 
@@ -251,7 +251,7 @@
               (merge {:handler #(dispatch (conj on-success %))}
                      (dissoc params :method :uri :on-success))))))
 
-(defn default-db-handler [db _] db)
+(defn- default-db-handler [db _] db)
 
 (defn reg-ajax-get-event
   "Registers an ajax get event that assoc-in the result to the db.

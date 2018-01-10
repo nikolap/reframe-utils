@@ -7,6 +7,9 @@
 ### Changed
 - Bump all dependencies (breaking changes to cljs-ajax)
 
+### Fixed
+- Nested get for subscriptions not working
+
 ## 0.1.4 - 2016-07-07
 ### Added
 - reg-sub-by-id
