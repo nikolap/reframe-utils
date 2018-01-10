@@ -1,4 +1,16 @@
 # Change Log
+## 0.2.0 - 2018-xx-xx
+### Added
+- reg-ajax-delete-event
+- Ability to alter on-success keys for ajax events, as well as manipulate DB with a DB fn
+
+### Changed
+- Bump all dependencies (breaking changes to cljs-ajax)
+
+## 0.1.4 - 2016-07-07
+### Added
+- reg-sub-by-id
+
 ## 0.1.3 - 2016-11-03
 ### Fixed
 - Data not returning following error being thrown

@@ -229,6 +229,11 @@
   (fn [db [_ k id-fn resp]]
     (add-or-update-by-id-event k id-fn false db [nil resp])))
 
+(reg-event-db
+  :reframe-utils/basic-delete-success
+  (fn [db [_ k id-fn resp]]
+    (update-in db k #(remove (fn [item] (= resp (id-fn item))) %))))
+
 (reg-fx
   :reframe-utils/http
   (fn [{:keys [method uri on-success] :as params}]
@@ -246,13 +251,17 @@
               (merge {:handler #(dispatch (conj on-success %))}
                      (dissoc params :method :uri :on-success))))))
 
+(defn default-db-handler [db _] db)
+
 (defn reg-ajax-get-event
   "Registers an ajax get event that assoc-in the result to the db.
    If no get- keyword passed, appends get- to the keyword.
 
    (reg-ajax-get-event \"/api/request-call\" :data)
    (reg-ajax-get-event \"/api/request-call\" :get-data :data)"
-  ([uri get-event-kw kw]
+  ([uri get-event-kw kw & [{:keys [on-success db-fn]
+                            :or   {on-success :reframe-utils/basic-get-success
+                                   db-fn      default-db-handler}}]]
    (reg-event-fx
      get-event-kw
      (fn [{:keys [db]} & [params]]
@@ -266,7 +275,9 @@
 (defn reg-ajax-post-event
   "Registers an ajax post event that applies an update-in and conj
    of the result to the db"
-  [uri post-event-kw kw]
+  [uri post-event-kw kw & [{:keys [on-success db-fn]
+                            :or   {on-success :reframe-utils/basic-add-success
+                                   db-fn      default-db-handler}}]]
   (reg-event-fx
     post-event-kw
     (fn [{:keys [db]} [_ params & [uri-strs]]]
@@ -280,7 +291,9 @@
   "Registers an ajax put event that applies an update-in and update
    of the result to the db. Assumes there is a unique identifier for
    items manipulated here"
-  [uri put-event-kw kw id-fn]
+  [uri put-event-kw kw id-fn & [{:keys [on-success db-fn]
+                                 :or   {on-success :reframe-utils/basic-update-success
+                                        db-fn      default-db-handler}}]]
   (reg-event-fx
     put-event-kw
     (fn [{:keys [db]} [_ params & [uri-strs]]]
@@ -289,6 +302,20 @@
                             :uri        (apply gstring/subs uri uri-strs)
                             :params     params
                             :on-success [:reframe-utils/basic-update-success kw id-fn]}})))
+
+(defn reg-ajax-delete-event
+  [uri event-kw kw id-fn & [{:keys [on-success db-fn]
+                             :or   {on-success :reframe-utils/basic-delete-success
+                                    db-fn      default-db-handler}}]]
+  (reg-event-fx
+    event-kw
+    (fn [{:keys [db]} [_ params & [uri-strs]]]
+      {:db                 (db-fn db params)
+       :reframe-utils/http {:method     :delete
+                            :uri        (apply gstring/subs uri uri-strs)
+                            :params     params
+                            :on-success [on-success kw id-fn]}})))
+
 
 ;; GENERAL UTILITIES
 
