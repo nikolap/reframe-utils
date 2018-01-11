@@ -59,6 +59,14 @@
    as a prefix to the keyword for the name of the sub. For example
    (reg-basic-sub :best-ns/my-sub) registers a subscription named
    :best-ns/get-my-sub and returns :best-ns/my-sub from the db"
+  ([name k sort-fn]
+   (reg-sub
+     name
+     (fn [db _]
+       (->> k
+            collify
+            (get-in db)
+            (sort-by sort-fn)))))
   ([name k]
    (reg-sub
      name

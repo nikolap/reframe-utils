@@ -3,6 +3,7 @@
 ### Added
 - reg-ajax-delete-event
 - Ability to alter on-success keys for ajax events, as well as manipulate DB with a DB fn
+- sort-fn arg to reg-basic-sub (3-arity)
 
 ### Changed
 - Bump all dependencies (breaking changes to cljs-ajax)
