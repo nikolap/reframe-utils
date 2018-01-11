@@ -6,6 +6,4 @@
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [org.clojure/clojurescript "1.9.946"]
                  [re-frame "0.10.2"]
-                 [cljs-ajax "0.7.3"]]
-  :deploy-repositories [["releases" {:sign-releases false :url "https://clojars.org/repo"}]
-                        ["snapshots" {:sign-releases false :url "https://clojars.org/repo"}]])
+                 [cljs-ajax "0.7.3"]])
