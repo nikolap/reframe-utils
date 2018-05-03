@@ -242,9 +242,16 @@
   (fn [db [_ k id-fn resp]]
     (update-in db k #(remove (fn [item] (= resp (id-fn item))) %))))
 
+(defn- dispatch-or-fn [f]
+  (cond
+    (fn? f) #(f %)
+    (sequential? f) #(dispatch (conj f %))
+    :else (error-and-return (str "Invalid arguments passed. Must either be a function or a sequential collection, not " f)
+                            #())))
+
 (reg-fx
   :reframe-utils/http
-  (fn [{:keys [method uri on-success] :as params}]
+  (fn [{:keys [method uri on-success handler on-error error-handler] :as params}]
     (let [req-fn (case method
                    :get GET
                    :head HEAD
@@ -256,7 +263,8 @@
                    :patch PATCH
                    (throw (js/Error. (str "Unrecognized ajax request method: " method))))]
       (req-fn uri
-              (merge {:handler #(dispatch (conj on-success %))}
+              (merge {:handler (dispatch-or-fn (or on-success handler))}
+                     (when (or on-error error-handler) {:handler (dispatch-or-fn (or on-error error-handler))})
                      (dissoc params :method :uri :on-success))))))
 
 (defn- default-db-handler [db _] db)
