@@ -1,5 +1,19 @@
 # Change Log
-## 0.2.0 - 2018-xx-xx
+## 0.2.1-1 - 2018-05-04
+### Added
+- Error handler to each of the existing ajax request sugar functions
+
+### Fixed
+- Error-handler accidentally firing
+
+## 0.2.1 - 2018-05-03
+### Added
+- Allow on-error and error-handler params to ajax requests
+- Allow handler param to ajax requests (alias for on-success)
+### Changed
+- Handle fn or dispatcher for ajax requests
+
+## 0.2.0 - 2018-?-?
 ### Added
 - reg-ajax-delete-event
 - Ability to alter on-success keys for ajax events, as well as manipulate DB with a DB fn
