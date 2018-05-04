@@ -264,7 +264,7 @@
                    (throw (js/Error. (str "Unrecognized ajax request method: " method))))]
       (req-fn uri
               (merge {:handler (dispatch-or-fn (or on-success handler))}
-                     (when (or on-error error-handler) {:handler (dispatch-or-fn (or on-error error-handler))})
+                     (when (or on-error error-handler) {:error-handler (dispatch-or-fn (or on-error error-handler))})
                      (dissoc params :method :uri :on-success))))))
 
 (defn- default-db-handler [db _] db)
