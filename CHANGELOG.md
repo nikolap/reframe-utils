@@ -1,4 +1,8 @@
 # Change Log
+## 0.2.2 - 2019-11-01
+### Changes
+- Make `add-or-update-by-id-event` public
+
 ## 0.2.1-1 - 2018-05-04
 ### Added
 - Error handler to each of the existing ajax request sugar functions

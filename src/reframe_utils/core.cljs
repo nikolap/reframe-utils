@@ -34,7 +34,7 @@
   (.error js/console msg)
   return)
 
-(defn- add-or-update-by-id-event
+(defn add-or-update-by-id-event
   [kw id-fn add-alt? db [_ item]]
   (if-let [id (id-fn item)]
     (update-in db kw
